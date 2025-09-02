@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.changes;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.drawCurrent;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.drawCurrentAndHistory;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.follower;
+import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.graphManager;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.stopRobot;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.telemetryM;
 
@@ -13,6 +14,8 @@ import com.bylazar.configurables.annotations.IgnoreConfigurable;
 import com.bylazar.field.FieldManager;
 import com.bylazar.field.PanelsField;
 import com.bylazar.field.Style;
+import com.bylazar.graph.GraphManager;
+import com.bylazar.graph.PanelsGraph;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
@@ -43,7 +46,8 @@ public class Tuning extends SelectableOpMode {
 
     @IgnoreConfigurable
     static TelemetryManager telemetryM;
-
+    @IgnoreConfigurable
+    static GraphManager graphManager;
     @IgnoreConfigurable
     static ArrayList<String> changes = new ArrayList<>();
 
@@ -89,6 +93,7 @@ public class Tuning extends SelectableOpMode {
         poseHistory = follower.getPoseHistory();
 
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
+        graphManager = PanelsGraph.INSTANCE.getManager();
     }
 
     @Override
@@ -775,6 +780,9 @@ class TranslationalTuner extends OpMode {
         }
 
         telemetryM.debug("Push the robot laterally to test the Translational PIDF(s).");
+        graphManager.addData("Error tr" , follower.getErrorCalculator().getTranslationalError().getMagnitude());
+        telemetryM.addData("Error tr" , follower.getTranslationalError().getMagnitude());
+        graphManager.update();
         telemetryM.update(telemetry);
     }
 }
@@ -1132,7 +1140,7 @@ class Triangle extends OpMode {
  * @version 1.0, 3/12/2024
  */
 class Circle extends OpMode {
-    public static double RADIUS = 10;
+    public static double RADIUS = 25;
     private PathChain circle;
 
     public void start() {
