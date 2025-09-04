@@ -1,4 +1,8 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode;
+
+import static org.firstinspires.ftc.teamcode.Constants.DeviceNames.pinPointName;
+import static org.firstinspires.ftc.teamcode.Constants.DeviceNames.rightBackMotorName;
+import static org.firstinspires.ftc.teamcode.Constants.DeviceNames.rightFrontMotorName;
 
 import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
@@ -12,16 +16,31 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.canvas.Canvas;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
 
+    public static class Globals{
+        public static boolean isSampleAuto = false;
+        public static double voltage = 12.0;
+    }
+
+    public enum Color {
+        Blue,
+        Yellow,
+        Red,
+        Green,
+        Purple,
+        None
+    }
+
+    public static class DeviceNames {
+        public static String leftFrontMotorName = "LFM";
+        public static String leftBackMotorName = "LBM";
+        public static String rightFrontMotorName = "RFM";
+        public static String rightBackMotorName = "RBM";
+        public static String pinPointName = "odo";
+    }
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 
@@ -37,10 +56,10 @@ public class Constants {
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
-            .rightFrontMotorName("RFM")
-            .rightRearMotorName("RBM")
-            .leftRearMotorName("LBM")
-            .leftFrontMotorName("LFM")
+            .rightFrontMotorName(rightFrontMotorName)
+            .rightRearMotorName(rightBackMotorName)
+            .leftRearMotorName(DeviceNames.leftBackMotorName)
+            .leftFrontMotorName(DeviceNames.leftFrontMotorName)
             .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
@@ -53,7 +72,7 @@ public class Constants {
             .forwardPodY(0.5)
             .strafePodX(3)
             .distanceUnit(DistanceUnit.CM)
-            .hardwareMapName("odo")
+            .hardwareMapName(pinPointName)
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
