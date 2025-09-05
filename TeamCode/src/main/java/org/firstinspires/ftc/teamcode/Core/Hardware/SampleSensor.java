@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Constants;
+import org.firstinspires.ftc.teamcode.Core.Algorithms.LowPassFilter;
 
 import java.util.Arrays;
 
@@ -39,7 +40,7 @@ public class SampleSensor {
         return sensor.getDistance(distanceUnit);
     }
 
-    public void update() {
+   /* public void update() {
         r = (int) redFilter.getValue(sensor.red());
         g = (int) greenFilter.getValue(sensor.green());
         b = (int) blueFilter.getValue(sensor.blue());
@@ -55,7 +56,7 @@ public class SampleSensor {
         } else {
             color = None;
         }
-    }
+    }*/
 
     public Constants.Color getColor() {
         return color;

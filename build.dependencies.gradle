@@ -23,5 +23,8 @@ dependencies {
     implementation 'com.acmerobotics.dashboard:dashboard:0.4.17'
     implementation 'com.bylazar:fullpanels:1.0.2'
     implementation 'androidx.appcompat:appcompat:1.2.0'
+
+    implementation 'org.ftclib.ftclib:vision:2.1.0' // vision
+    implementation 'org.ftclib.ftclib:core:2.1.1' // core
 }
 
