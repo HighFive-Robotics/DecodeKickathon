@@ -25,14 +25,26 @@ public class Constants {
         public static double voltage = 12.0;
     }
 
-    public enum Color {
+    public static enum Case {
+        Left,
+        Middle,
+        Right,
+        None
+    }
+
+    public static Case randomizedCase = Case.None;
+
+    public static enum Color {
         Blue,
-        Yellow,
+        //Yellow, gg bye bye Itd
         Red,
         Green,
         Purple,
         None
     }
+
+    public static Color[][] targetColors = {{Color.Green, Color.Purple,Color.Purple},{Color.Purple,Color.Green,Color.Purple},{ Color.Purple,Color.Purple,Color.Green}};
+    public static Color[] inMixerColors = {Color.None,Color.None,Color.None};
 
     public static class DeviceNames {
         public static String leftFrontMotorName = "LFM";
@@ -40,6 +52,7 @@ public class Constants {
         public static String rightFrontMotorName = "RFM";
         public static String rightBackMotorName = "RBM";
         public static String pinPointName = "odo";
+        public static String webcamName = "Webcam 1";
     }
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
