@@ -5,10 +5,12 @@ import static org.firstinspires.ftc.teamcode.Constants.randomizedCase;
 
 import android.util.Size;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -26,14 +28,15 @@ import java.util.ArrayList;
 @Config
 public class Camera implements HighModuleSimple {
 
-    public static double xOffset = 20, yOffset = 20;
+    public static double xOffset = 30, yOffset = 0;
     public AprilTagProcessor aprilTagProcessor;
-    public ArrayList<AprilTagDetection> detections;
+    public ArrayList<AprilTagDetection> detections = new ArrayList<>();
+    ElapsedTime timer = new ElapsedTime();
 
     public Camera(HardwareMap hardwareMap){
         aprilTagProcessor = new AprilTagProcessor.Builder()
                 .setLensIntrinsics(1385.92f,1385.92f,951.982f,534.084f)
-                .setCameraPose(new Position(DistanceUnit.CM, 22, 22, 22,0), new YawPitchRollAngles(AngleUnit.DEGREES, 22,22,22,0))//TODO
+                .setCameraPose(new Position(DistanceUnit.CM, 0, 0, 0,0), new YawPitchRollAngles(AngleUnit.DEGREES, 0,0,0,0))//TODO
                 .setOutputUnits(DistanceUnit.CM, AngleUnit.RADIANS)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .build();
@@ -43,7 +46,7 @@ public class Camera implements HighModuleSimple {
                 .setCamera(hardwareMap.get(WebcamName.class, webcamName))
                 .addProcessor(aprilTagProcessor)
                 .build();
-
+        FtcDashboard.getInstance().startCameraStream(camera,60);
     }
 
     public int getAprilTagID(int index){
@@ -74,35 +77,43 @@ public class Camera implements HighModuleSimple {
     }
 
     public Pose distanceToAprilTag(){
+        Pose pose = new Pose();
         int index = -1;
+        AprilTagDetection detection = null;
         Vector vector = new Vector();
         if(!detections.isEmpty()){
             for(int i = 0; i < detections.size(); i++) {
                 if (getAprilTagID(i) == 20) {
                     index = i;
+                    detection = detections.get(i);
                     break;
                 } else if (getAprilTagID(i) == 24) {
                     index = i;
+                    detection = detections.get(i);
                     break;
                 }
             }
         }
-        if(index != -1){
-            vector = new Vector(new Pose(detections.get(index).ftcPose.x,detections.get(index).ftcPose.y));
-            vector.rotateVector(-detections.get(index).ftcPose.yaw);
+
+        if(index != -1 && detection != null){
+            vector = new Vector(new Pose(-detection.ftcPose.x,detection.ftcPose.y));
+            vector.rotateVector(-detection.ftcPose.yaw);
+            pose = new Pose(vector.getXComponent(), vector.getYComponent(), detection.ftcPose.yaw);
         }
-        Pose pose = new Pose(vector.getXComponent(), vector.getYComponent(), detections.get(index).ftcPose.yaw);
         return pose;
     }
 
     public Pose targetPose(Pose currentPose){
         Pose aux = distanceToAprilTag();
         aux = aux.rotate(-currentPose.getHeading(), false);
-        return new Pose(currentPose.getX() + aux.getX() + xOffset,currentPose.getY() + aux.getY() - yOffset, currentPose.getHeading() + aux.getHeading());
+        return new Pose(currentPose.getX() + aux.getX() + xOffset,currentPose.getY() + aux.getY() + yOffset, currentPose.getHeading() + aux.getHeading());
     }
 
     @Override
     public void update() {
-        detections = aprilTagProcessor.getDetections();
+        if(timer.milliseconds()>=100) {
+            detections = aprilTagProcessor.getDetections();
+            timer.reset();
+        }
     }
 }
