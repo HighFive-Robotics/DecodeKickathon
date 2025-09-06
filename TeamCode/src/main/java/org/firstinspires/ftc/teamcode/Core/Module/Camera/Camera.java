@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.Constants.randomizedCase;
 
 import android.util.Size;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -22,8 +23,10 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
 
+@Config
 public class Camera implements HighModuleSimple {
 
+    public static double xOffset = 20, yOffset = 20;
     public AprilTagProcessor aprilTagProcessor;
     public ArrayList<AprilTagDetection> detections;
 
@@ -70,7 +73,7 @@ public class Camera implements HighModuleSimple {
         return randomizedCase;
     }
 
-    public Vector distanceToAprilTag(double robotHeading){
+    public Pose distanceToAprilTag(){
         int index = -1;
         Vector vector = new Vector();
         if(!detections.isEmpty()){
@@ -88,7 +91,14 @@ public class Camera implements HighModuleSimple {
             vector = new Vector(new Pose(detections.get(index).ftcPose.x,detections.get(index).ftcPose.y));
             vector.rotateVector(-detections.get(index).ftcPose.yaw);
         }
-        return vector;
+        Pose pose = new Pose(vector.getXComponent(), vector.getYComponent(), detections.get(index).ftcPose.yaw);
+        return pose;
+    }
+
+    public Pose targetPose(Pose currentPose){
+        Pose aux = distanceToAprilTag();
+        aux = aux.rotate(-currentPose.getHeading(), false);
+        return new Pose(currentPose.getX() + aux.getX() + xOffset,currentPose.getY() + aux.getY() - yOffset, currentPose.getHeading() + aux.getHeading());
     }
 
     @Override
