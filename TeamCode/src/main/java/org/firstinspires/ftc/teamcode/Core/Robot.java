@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.Core;
 
 import com.pedropathing.follower.Follower;
 
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.Core.Hardware.HighModuleSimple;
+import org.firstinspires.ftc.teamcode.Core.Module.Camera.Camera;
 
 import java.util.List;
 
@@ -22,6 +24,8 @@ public class Robot implements HighModuleSimple {
     public Drive teleOpDrive;
     public List<LynxModule> allHubs;
     protected HardwareMap hardwareMap;
+
+    public Camera camera;
 
     boolean isAuto;
 
@@ -49,12 +53,14 @@ public class Robot implements HighModuleSimple {
         None
     }
 
-    public Robot(HardwareMap hardwareMap, boolean isAuto, Constants.Color allianceColor, Telemetry telemetry){
+    public Robot(HardwareMap hardwareMap, Pose startPose , boolean isAuto, Constants.Color allianceColor, Telemetry telemetry){
         this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
         this.isAuto = isAuto;
         if (isAuto) {
-
+            drive = Constants.createFollower(hardwareMap);
+            drive.setStartingPose(startPose);
+            camera = new Camera(hardwareMap);
         } else {
 
         }
@@ -73,10 +79,9 @@ public class Robot implements HighModuleSimple {
     @Override
     public void update() {
         Constants.Globals.voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
-
-
         if(isAuto){
             drive.update();
+            camera.update();
         }
         else {
             teleOpDrive.update();

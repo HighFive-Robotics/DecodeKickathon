@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Core.Module.Camera.Camera;
 @TeleOp
 public class CameraTest extends LinearOpMode {
 
-    public static double x = 114, y = 279, rot = 2.35;
+    public static double x = 0, y = 0, rot = 0;
 
     public static Pose robotPose = new Pose(x, y, rot);
     Camera camera;

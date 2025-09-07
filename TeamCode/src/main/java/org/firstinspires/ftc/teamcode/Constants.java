@@ -44,7 +44,11 @@ public class Constants {
     }
 
     public static Color[][] targetColors = {{Color.Green, Color.Purple,Color.Purple},{Color.Purple,Color.Green,Color.Purple},{ Color.Purple,Color.Purple,Color.Green}};
-    public static Color[] inMixerColors = {Color.None,Color.None,Color.None};
+    public static Color[] mixerColors = {Color.None,Color.None,Color.None};
+    public static Color currentColor = Color.None;
+    public static double GreenValuesHSV[] = {160F,0.75F,20F};
+    public static double PurpleValuesHSV[] = {200F,0.40F,5F};
+    public static double Treshold[] = {17.5F, 0.2F, 5F};
 
     public static class DeviceNames {
         public static String leftFrontMotorName = "LFM";
@@ -53,12 +57,15 @@ public class Constants {
         public static String rightBackMotorName = "RBM";
         public static String pinPointName = "odo";
         public static String webcamName = "Webcam 1";
+        public static String trapSensorName = "TCS";
+        public static String trapServoName= "TS";
+        public static String mixerServoName= "MS";
     }
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 
     public static FollowerConstants FConstants = new FollowerConstants()
-            .mass(9.5)
+            .mass(8)
             .forwardZeroPowerAcceleration(-38.72073)
             .lateralZeroPowerAcceleration(-67.852369)
             .translationalPIDFCoefficients(new PIDFCoefficients(0.05,0,0.0052,0.025))
@@ -73,21 +80,21 @@ public class Constants {
             .rightRearMotorName(rightBackMotorName)
             .leftRearMotorName(DeviceNames.leftBackMotorName)
             .leftFrontMotorName(DeviceNames.leftFrontMotorName)
-            .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .xVelocity(90.6866)
             .yVelocity(71.773132)
             ;
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(0.5)
-            .strafePodX(3)
+            .forwardPodY(0)
+            .strafePodX(7.25)
             .distanceUnit(DistanceUnit.CM)
             .hardwareMapName(pinPointName)
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
-            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
+            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
