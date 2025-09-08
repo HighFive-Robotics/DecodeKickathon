@@ -1,8 +1,7 @@
 package org.firstinspires.ftc.teamcode.Core.Module.Outtake;
 
-import static org.firstinspires.ftc.teamcode.Constants.DeviceNames.trapSensorName;
+import static org.firstinspires.ftc.teamcode.Constants.DeviceNames.pusherServoName;
 import static org.firstinspires.ftc.teamcode.Constants.DeviceNames.trapServoName;
-import static org.firstinspires.ftc.teamcode.Constants.currentColor;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -14,36 +13,34 @@ import org.firstinspires.ftc.teamcode.Core.Hardware.HighModule;
 import org.firstinspires.ftc.teamcode.Core.Hardware.HighServo;
 
 @Config
-public class Trap implements HighModule {
+public class Pusher implements HighModule {
 
-    public static double openPose = 0.55, closedPose = 0.8;
+    public static double retractedPose = 0.3, extendedPose = 0.5;
 
-    public HighServo trapServo;
-    public ArtifactSensor sensor;
-    Constants.Color wantedColor = Constants.Color.Blue;
+    HighServo pushServo;
     public States state = States.None;
     private double target;
 
+
     public enum States {
-        Open,
-        Closed,
+        Retracted,
+        Extended,
         None
     }
 
-    public Trap(HardwareMap hardwareMap, double initPosition, boolean isAuto){
-        trapServo = new HighServo(hardwareMap.get(Servo.class, trapServoName) ,HighServo.RunMode.Standard, initPosition ,isAuto);
-        sensor = new ArtifactSensor(hardwareMap, trapSensorName);
+    public Pusher(HardwareMap hardwareMap, double initPosition, boolean isAuto){
+        pushServo = new HighServo(hardwareMap.get(Servo.class, pusherServoName) ,HighServo.RunMode.Standard, initPosition ,isAuto);
         target = initPosition;
     }
 
     public void setState(States state) {
         this.state = state;
         switch (state) {
-            case Open:
-                setTarget(openPose);
+            case Retracted:
+                setTarget(retractedPose);
                 break;
-            case Closed:
-                setTarget(closedPose);
+            case Extended:
+                setTarget(extendedPose);
                 break;
         }
     }
@@ -51,11 +48,11 @@ public class Trap implements HighModule {
     public void setState(States state, double time) {
         this.state = state;
         switch (state) {
-            case Open:
-                setTarget(openPose, time);
+            case Retracted:
+                setTarget(retractedPose, time);
                 break;
-            case Closed:
-                setTarget(closedPose, time);
+            case Extended:
+                setTarget(extendedPose, time);
                 break;
         }
     }
@@ -63,18 +60,18 @@ public class Trap implements HighModule {
     @Override
     public void setTarget(double target) {
         this.target = target;
-        trapServo.setPosition(target);
+        pushServo.setPosition(target);
     }
 
     @Override
     public void setTarget(double target, double time) {
         this.target = target;
-        trapServo.setPosition(target, time);
+        pushServo.setPosition(target, time);
     }
 
     @Override
     public boolean atTarget() {
-        return trapServo.atTarget();
+        return pushServo.atTarget();
     }
 
     @Override
@@ -82,20 +79,8 @@ public class Trap implements HighModule {
         return target;
     }
 
-    public States getState() {
-        return state;
-    }
-
-    public void setWantedColor(Constants.Color color){
-        wantedColor = color;
-    }
-
     @Override
     public void update() {
-        if(wantedColor == currentColor && state != States.Open){
-            setState(States.Open);
-        }
-        trapServo.update();
-        sensor.update();
+        pushServo.update();
     }
 }

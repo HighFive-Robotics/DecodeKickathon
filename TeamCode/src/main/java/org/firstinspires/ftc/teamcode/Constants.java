@@ -25,7 +25,7 @@ public class Constants {
         public static double voltage = 12.0;
     }
 
-    public static enum Case {
+    public enum Case {
         Left,
         Middle,
         Right,
@@ -34,7 +34,7 @@ public class Constants {
 
     public static Case randomizedCase = Case.None;
 
-    public static enum Color {
+    public enum Color {
         Blue,
         //Yellow, gg bye bye Itd
         Red,
@@ -47,7 +47,7 @@ public class Constants {
     public static Color[] mixerColors = {Color.None,Color.None,Color.None};
     public static Color currentColor = Color.None;
     public static double GreenValuesHSV[] = {160F,0.75F,20F};
-    public static double PurpleValuesHSV[] = {200F,0.40F,5F};
+    public static double PurpleValuesHSV[] = {215F,0.40F,5F};
     public static double Treshold[] = {17.5F, 0.2F, 5F};
 
     public static class DeviceNames {
@@ -60,6 +60,8 @@ public class Constants {
         public static String trapSensorName = "TCS";
         public static String trapServoName= "TS";
         public static String mixerServoName= "MS";
+        public static String shooterMotorName = "SM";
+        public static String pusherServoName = "P";
     }
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);

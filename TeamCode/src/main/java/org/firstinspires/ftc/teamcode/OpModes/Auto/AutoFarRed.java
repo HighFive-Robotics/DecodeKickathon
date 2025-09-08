@@ -13,19 +13,17 @@ import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.Core.Robot;
 
 @Autonomous
-public class AutoCloseRed extends LinearOpMode {
+public class AutoFarRed extends LinearOpMode {
     public Robot robot;
 
     private int state = 1;
 
-    public Pose startPose = new Pose(106, 134, Math.toRadians(180));
-    private final Pose detectPose = new Pose(96, 110, Math.toRadians(130));
+    public Pose startPose = new Pose(96, 10, Math.toRadians(180));
     private final Pose scorePose = new Pose(112, 112, Math.toRadians(45));
-    private final Pose parkPose = new Pose(45, 125, Math.toRadians(180));
+    private final Pose parkPose = new Pose(100, 50, Math.toRadians(180));
     private ElapsedTime timer = new ElapsedTime();
 
-    BezierLine detectCase = new BezierLine(startPose, detectPose);
-    BezierLine scorePreload = new BezierLine(detectPose, scorePose);
+    BezierLine scorePreload = new BezierLine(startPose, scorePose);
     BezierLine park = new BezierLine(scorePose, parkPose);
     Path path1, path2, path3;
     @Override
@@ -36,10 +34,8 @@ public class AutoCloseRed extends LinearOpMode {
         mixerColors[2] = Constants.Color.Purple;
 
         robot = new Robot(hardwareMap, startPose, true, Constants.Color.Red, telemetry);
-        path1 = new Path(detectCase);
-        path1.setLinearHeadingInterpolation(startPose.getHeading(), detectPose.getHeading());
-        path2 = new Path(scorePreload);
-        path2.setLinearHeadingInterpolation(detectPose.getHeading(), scorePose.getHeading());
+        path1 = new Path(scorePreload);
+        path1.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
         path3 = new Path(park);
         path3.setLinearHeadingInterpolation(scorePose.getHeading(), parkPose.getHeading());
 
@@ -47,10 +43,6 @@ public class AutoCloseRed extends LinearOpMode {
         while (opModeIsActive()) {
             switch (state) {
                 case 1:
-                    robot.drive.followPath(path1, true);
-                    state++;
-                    break;
-                case 2:
                     if (robot.isDone() && robot.camera.getCase() != Constants.Case.None) {
                         telemetry.addData("Case is:", robot.camera.getCase());
                         telemetry.update();
@@ -58,19 +50,21 @@ public class AutoCloseRed extends LinearOpMode {
                         state++;
                     }
                     break;
+                case 2:
+                    if (robot.isDone() && timer.milliseconds() >= 13000) {
+                        robot.drive.followPath(path1);
+                        state++;
+                    }
+                    break;
                 case 3:
                     if (robot.isDone()) {
-                        robot.drive.followPath(path2, true);
+                        robot.drive.followPath(path3, true);
                         timer.reset();
                         state++;
                     }
                     break;
-                case 4:
-                    if(robot.isDone()){
-                        robot.drive.followPath(path3, true);
-                    }
             }
             robot.update();
-        }//
+        }
     }
 }
