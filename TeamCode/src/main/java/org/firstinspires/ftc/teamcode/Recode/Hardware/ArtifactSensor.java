@@ -8,7 +8,7 @@ public class ArtifactSensor {
 
     public ArtifactSensor(HardwareMap hardwareMap)
     {
-        
+
     }
 
 }

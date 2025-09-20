@@ -62,6 +62,7 @@ public class Constants {
         public static String mixerServoName= "MS";
         public static String shooterMotorName = "SM";
         public static String pusherServoName = "P";
+        public static String artifact
     }
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
