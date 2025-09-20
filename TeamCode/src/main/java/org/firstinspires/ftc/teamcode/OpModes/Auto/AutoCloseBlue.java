@@ -60,7 +60,7 @@ public class AutoCloseBlue extends LinearOpMode {
                 case 2:
                     if (robot.isDone() && robot.camera.getCase() != Constants.Case.None) {
                         telemetry.addData("Case is:", robot.camera.getCase());
-                        a = robot.camera.getCase();
+                        a = robot.camera. getCase();
                         telemetry.update();
                         timer.reset();
                         state++;

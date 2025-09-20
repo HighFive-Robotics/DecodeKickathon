@@ -54,9 +54,8 @@ public class Robot implements HighModuleSimple {
 
     public enum Actions {
         WaitToBeFedUp,
-        ColorGreen,
-        ColorPurple,
-        CollectSampleFromPerimeter,
+        ColorGreen,//Doesn't work
+        ColorPurple,//Doesn't work
         None
     }
 
