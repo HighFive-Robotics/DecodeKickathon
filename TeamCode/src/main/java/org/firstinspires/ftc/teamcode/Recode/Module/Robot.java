@@ -1,4 +1,4 @@
 package org.firstinspires.ftc.teamcode.Recode.Module;
 
-public class Pusher {
+public class Robot {
 }
