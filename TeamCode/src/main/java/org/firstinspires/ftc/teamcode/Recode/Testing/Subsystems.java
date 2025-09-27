@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Recode.Testing;
 
 
 import static org.firstinspires.ftc.teamcode.Recode.Module.Outtake.Pusher.retractedPose;
+import static org.firstinspires.ftc.teamcode.Recode.Module.Outtake.Trap.closedPose;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -37,6 +38,7 @@ public class Subsystems extends LinearOpMode {
         shooter = new Shooter(hardwareMap);
         mixer = new Mixer(hardwareMap,0,false);
         pusher = new Pusher(hardwareMap,retractedPose,false);
+        trap = new Trap(hardwareMap ,closedPose , false);
         // ---
         // SUBSISTEME
         // ---
@@ -89,7 +91,8 @@ public class Subsystems extends LinearOpMode {
                 telemetry.addLine("B: Retract Pusher");
                 break;
             case Trap:
-                telemetry.addLine("No controls are implemented for Trap yet.");
+                telemetry.addLine("A: Open Trap");
+                telemetry.addLine("B: Close Trap");
                 break;
         }
 
@@ -110,7 +113,8 @@ public class Subsystems extends LinearOpMode {
                 telemetry.addData("Servo Target", pusher.getTarget());
                 break;
             case Trap:
-                telemetry.addLine("No debug info for Trap yet.");
+                telemetry.addData("Curent State" , trap.state);
+                telemetry.addData("Servo Target" , trap.getTarget());
                 break;
         }
         telemetry.update();
@@ -152,6 +156,14 @@ public class Subsystems extends LinearOpMode {
                     }
                     break;
                 case Trap:
+                    if(gamepad1.a && timers.get("a").milliseconds() > 250){
+                        trap.setState(Trap.States.Open , 0);
+                        timers.get("a").reset();
+                    }
+                    if(gamepad1.b && timers.get("b").milliseconds() > 250){
+                        trap.setState(Trap.States.Closed , 0);
+                        timers.get("b").reset();
+                    }
                     break;
             }
     }
@@ -159,6 +171,7 @@ public class Subsystems extends LinearOpMode {
         mixer.update();
         shooter.update();
         pusher.update();
+        trap.update();
     }
     @Override
     public void runOpMode() throws InterruptedException {
