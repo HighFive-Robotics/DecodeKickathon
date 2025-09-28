@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Core.Module.Camera.Camera;
 import org.firstinspires.ftc.teamcode.Recode.Module.Outtake.Mixer;
 import org.firstinspires.ftc.teamcode.Recode.Module.Outtake.Pusher;
 import org.firstinspires.ftc.teamcode.Recode.Module.Outtake.Shooter;
@@ -18,19 +19,23 @@ import org.firstinspires.ftc.teamcode.Recode.Module.Outtake.Trap;
 import java.util.HashMap;
 import java.util.Timer;
 
-@TeleOp
+@TeleOp(name = "Testing Recoded Subsystems")
 public class Subsystems extends LinearOpMode {
     private enum System {
         Mixer,
         Shooter,
         Pusher,
         Trap,
+        Camera,
+        Sensor,
     }
     private System currentSystem;
     public Shooter shooter;
     public Mixer mixer;
     public Pusher pusher;
     public Trap trap;
+
+    public Camera camera;
     HashMap<Integer , System> modes = new HashMap<>();
     HashMap<String, ElapsedTime> timers = new HashMap<>();
     int i;
@@ -39,6 +44,7 @@ public class Subsystems extends LinearOpMode {
         mixer = new Mixer(hardwareMap,0,false);
         pusher = new Pusher(hardwareMap,retractedPose,false);
         trap = new Trap(hardwareMap ,closedPose , false);
+        camera=new Camera(hardwareMap);
         // ---
         // SUBSISTEME
         // ---
@@ -46,6 +52,7 @@ public class Subsystems extends LinearOpMode {
         modes.put(2,System.Shooter);
         modes.put(3,System.Pusher);
         modes.put(4,System.Trap);
+        modes.put(5,System.Camera);
         i=1;currentSystem = modes.get(i);
         // ---
         // TIMERS
@@ -116,6 +123,10 @@ public class Subsystems extends LinearOpMode {
                 telemetry.addData("Curent State" , trap.state);
                 telemetry.addData("Servo Target" , trap.getTarget());
                 break;
+            case Camera:
+                telemetry.addData("Curent AprilTagId" ,camera.getAprilTagID(0));
+                telemetry.addData("Curent Case" , camera.getCase());
+                break;
         }
         telemetry.update();
     }
@@ -172,6 +183,7 @@ public class Subsystems extends LinearOpMode {
         shooter.update();
         pusher.update();
         trap.update();
+        camera.update();
     }
     @Override
     public void runOpMode() throws InterruptedException {
@@ -187,7 +199,7 @@ public class Subsystems extends LinearOpMode {
                 timers.get("left").reset();
             }
             if(gamepad1.dpad_right && timers.get("right").milliseconds() > 250){
-                if(i == 4){
+                if(i == 5){
                     i = 1;
                     currentSystem = modes.get(i);
                 }else currentSystem=modes.get(++i);
