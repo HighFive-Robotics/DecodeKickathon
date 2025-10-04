@@ -77,6 +77,15 @@ public class Mixer implements HighModule {
             setState(States.Slot3);
         }
     }
+    public void emptySlot(double time){
+        if (mixerColors[0] == Constants.Color.None) {
+            setState(States.Slot1 , time);
+        } else if (mixerColors[1] == Constants.Color.None) {
+            setState(States.Slot2 , time);
+        } else if (mixerColors[2] == Constants.Color.None) {
+            setState(States.Slot3 , time);
+        }
+    }
     public Constants.Color getColorFromSlot(int slotNumber){
         switch (slotNumber){
             case 1:
