@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.Core.Hardware.HighModule;
 import org.firstinspires.ftc.teamcode.Core.Hardware.HighServo;
 
@@ -67,7 +68,27 @@ public class Mixer implements HighModule {
                 break;
         }
     }
-
+    public void emptySlot(){
+        if (mixerColors[0] == Constants.Color.None) {
+            setState(States.Slot1);
+        } else if (mixerColors[1] == Constants.Color.None) {
+            setState(States.Slot2);
+        } else if (mixerColors[2] == Constants.Color.None) {
+            setState(States.Slot3);
+        }
+    }
+    public Constants.Color getColorFromSlot(int slotNumber){
+        switch (slotNumber){
+            case 1:
+                return mixerColors[0];
+            case 2:
+                return mixerColors[1];
+            case 3:
+                return mixerColors[2];
+            default:
+                return null;
+        }
+    }
     @Override
     public void setTarget(double target) {
         this.target = target;
