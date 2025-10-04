@@ -58,9 +58,9 @@ public class TeleOpDemo extends LinearOpMode {
 
         while (opModeIsActive()) {
             robot.teleOpDrive.driveFieldCentric(gamepad1 ,robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
-            if(gamepad2.circle && timers.get("a").milliseconds() >= 250){
+            if(gamepad2.circle && timers.get("circle").milliseconds() >= 250){
                 robot.setAction(Robot.Actions.WaitToBeFedUp);
-                timers.get("a").reset();
+                timers.get("circle").reset();
             }
             if(gamepad2.cross && timers.get("cross").milliseconds() >= 250){
                 robot.setAction(Robot.Actions.ColorPurple);
