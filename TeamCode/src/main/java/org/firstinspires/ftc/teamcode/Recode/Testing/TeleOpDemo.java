@@ -75,7 +75,7 @@ public class TeleOpDemo extends LinearOpMode {
                 timers.get("up").reset();
             }
             if(gamepad2.dpad_left && timers.get("left").milliseconds() >= 250){
-                robot.mixer.setState(Mixer.States.Slot1);
+                robot.mixer.setState(Mixer.States.Slot2);
                 timers.get("left").reset();
             }
             if(gamepad2.dpad_right && timers.get("right").milliseconds() >= 250){
