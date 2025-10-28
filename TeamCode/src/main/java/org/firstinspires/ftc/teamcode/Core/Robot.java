@@ -83,7 +83,6 @@ public class Robot implements HighModuleSimple {
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
-
     }
 
     public void setAction(Actions action) {
