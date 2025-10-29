@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Core.Algorithms.VelocityPID;
 
 @TeleOp
@@ -26,12 +27,13 @@ public class TestVelocity extends LinearOpMode {
     VelocityPID pid;
     PIDFController pidf;
     FtcDashboard dashboard;
-    public static double targetVelo = 1200;
-    public double errorVelo;
+    public static double targetVelo = 5;
+    public double velo = 0;
 
     public double currentVelo;
     public double delta = 0;
-    public static double kp=0.001,ki=0.002,kd=0,kf=0.00035;
+    public double lastx = 0;
+    public static double kp=0.045,ki=0.045,kd=0.0000001,kf=0.00016;
     ElapsedTime timer = new ElapsedTime();
     ElapsedTime timer1 = new ElapsedTime();
     @Override
@@ -43,7 +45,7 @@ public class TestVelocity extends LinearOpMode {
         motor.setDirection(DcMotorSimple.Direction.REVERSE);
         pidf = new PIDFController(kp,ki,kd,kf);
         pidf.reset();
-        pidf.setTolerance(20);
+        pidf.setTolerance(0.2);
         pid = new VelocityPID(kp,ki,kd,kf ,timer);
         pid.reset();
         pid.setTolerance(20);
@@ -56,20 +58,23 @@ public class TestVelocity extends LinearOpMode {
                 useCustom = !useCustom;
                 timer1.reset();
             }
-            delta = motor.getCurrentPosition() - delta;
+            delta = motor.getCurrentPosition() - lastx;
+            lastx = motor.getCurrentPosition();
             currentVelo = 1000 * delta / zaza.milliseconds();
             zaza.reset();
             pid.setPIDF(kp,ki,kd,kf);
             pidf.setPIDF(kp,ki,kd,kf);
             pidf.setSetPoint(targetVelo);
             pid.setSetPoint(targetVelo);
+//            velo = motor.getVelocity(AngleUnit.RADIANS) * 0.096*Math.PI;
+            velo = (motor.getVelocity()/28)*0.096;
             if(useCustom){
-                motor.setPower(pid.calculate(motor.getVelocity()));
+                motor.setPower(pid.calculate(velo));
                 telemetry.addData("Target" , targetVelo);
                 telemetry.addData("Error" , pid.getVelocityError());
                 telemetry.addData("Position" , motor.getCurrentPosition());
                 telemetry.addData("Current Velo" , motor.getVelocity());
-                telemetry.addData("Current Velo ++" , currentVelo);
+                telemetry.addData("Current Velo ++" , velo);
                 telemetry.addLine("USES CUSTOM");
                 telemetry.update();
             }else {
