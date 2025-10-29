@@ -27,6 +27,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.Core.Algorithms.SquidController;
+import org.firstinspires.ftc.teamcode.Core.Algorithms.VelocityPID;
 
 public class HighMotor {
 
@@ -34,7 +35,8 @@ public class HighMotor {
         Squid,
         PID,
         Standard,
-        Time
+        Time,
+        Velocity
     }
 
     public enum FeedForwardType{
@@ -48,6 +50,7 @@ public class HighMotor {
     public DcMotorEx motor;
     public final PIDFController pidfController = new PIDFController(0,0,0,0);
     public final SquidController squidController = new SquidController(0,0,0,0);
+    public final VelocityPID pidfVelocity = new VelocityPID(0,0,0,0, timer);
     private double lastPower = -2, power;
     private double multiplier = 1.0;
     private final double epsilon = 1e-5;
@@ -58,6 +61,7 @@ public class HighMotor {
     private boolean useEncoder = false, useZeroPowerBehaviour = true;
     private double target = 0, tolerance = epsilon;
     private double currentPosition = 0, maxPIDPower = 1, kF = 0, initialAngle = 0, ticksPerDegree = 0;
+    private double currentVelocity, encoderResolution = 1, wheelDiameter = 0;
     private double time=-1;
 
     /**
@@ -411,6 +415,8 @@ public class HighMotor {
     public void setTarget(double target) {
         this.target = target;
         pidfController.setSetPoint(target);
+        squidController.setSetPoint(target);
+        pidfVelocity.setSetPoint(target);
     }
 
     /**
@@ -439,6 +445,8 @@ public class HighMotor {
     public void setTolerance(double tolerance) {
         this.tolerance = tolerance;
         pidfController.setTolerance(tolerance);
+        squidController.setTolerance(tolerance);
+        pidfVelocity.setTolerance(tolerance);
     }
 
     /**
@@ -744,6 +752,74 @@ public class HighMotor {
         return Range.clip(SquidPower + FeedForward, -maxPIDPower, maxPIDPower);
     }
 
+    //Velocity stuff:
+
+    public void setEncoderResolution(double encoderResolution) {
+        this.encoderResolution = encoderResolution;
+    }
+
+    public double getEncoderResolution(){
+        return encoderResolution;
+    }
+
+    public double getVelocity(double encoderResolution, double wheelDiameter) {
+        this.encoderResolution = encoderResolution;
+        this.wheelDiameter = wheelDiameter;
+        return (motor.getVelocity() / encoderResolution) * wheelDiameter;
+    }
+
+    /**
+     * This method sets the Squid coefficients (kP, kI, kD) for the Squid controller.
+     * This method is used when we only want to configure the basic proportional,
+     * integral, and derivative gains, and no feedforward (kF = 0).
+     *
+     * @param kP the proportional gain
+     * @param kI the integral gain
+     * @param kD the derivative gain
+     */
+    public void setVelocityPIDCoefficients(double kP, double kI, double kD) {
+        pidfVelocity.setPIDF(kP, kI, kD, 0);
+    }
+
+    /**
+     * This method sets the Squid coefficients (kP, kI, kD) for the Squid controller.
+     * This method is used when we only want to configure the basic proportional,
+     * integral, and derivative gains, and no feedforward (kF = 0).
+     * Also it sets the maximum power that the Squid controller is allowed to apply.
+     *
+     * @param kP the proportional gain
+     * @param kI the integral gain
+     * @param kD the derivative gain
+     * @param maxPIDPower the value of the maximum power our Squid controller is allowed to apply
+     */
+    public void setVelocityPIDCoefficients(double kP, double kI, double kD, double maxPIDPower) {
+        this.maxPIDPower = Math.abs(maxPIDPower);
+        pidfVelocity.setPIDF(kP, kI, kD, 0);
+    }
+
+
+    /**
+     * Sets the PID coefficients (kP, kI, kD) along with feedforward gain (kF), the feed forward type(Arm or Lift),
+     * initial angle, ticks per degree and the maximum power our PID controller is allowed to apply
+     *
+     *
+     * @param kP the proportional gain
+     * @param kI the integral gain
+     * @param kD the derivative gain
+     * @param kF the feedforward gain
+     * @param maxPIDPower the value of the maximum power our PID controller is allowed to apply
+     */
+    public void setVelocityPIDCoefficients(double kP, double kI, double kD, double kF, double maxPIDPower) {
+        pidfVelocity.setPIDF(kP, kI, kD, kF);
+        this.maxPIDPower = Math.abs(maxPIDPower);
+    }
+
+    public double getPowerVelocity(double currentVelocity) {
+        this.currentVelocity = currentVelocity;
+        double VelocityPower = pidfVelocity.calculate(currentVelocity, target);
+        return Range.clip(VelocityPower, -maxPIDPower, maxPIDPower);
+    }
+
     /**
      * This method updates the motor control logic depending on the current runMode.
      * If we use an encoder, the current motor position is read and adjusted
@@ -774,6 +850,14 @@ public class HighMotor {
                 break;
             case PID:
                 power = getPowerPID(currentPosition);
+                if (Math.abs(power - lastPower) >= epsilon) {
+                    motor.setPower(power);
+                    lastPower = power;
+                }
+                break;
+            case Velocity:
+                currentVelocity = getVelocity(encoderResolution,wheelDiameter);
+                power = getPowerPID(currentVelocity);
                 if (Math.abs(power - lastPower) >= epsilon) {
                     motor.setPower(power);
                     lastPower = power;
@@ -844,6 +928,14 @@ public class HighMotor {
                     telemetry.addData("Initial angle: ", getInitialAngle());
                     telemetry.addData("Ticks per degree: ", getTicksPerDegree());
                 }
+                break;
+            case Velocity:
+                telemetry.addData("Error: ", target - currentVelocity);
+                telemetry.addData("Target: ", getTarget());
+                telemetry.addData("Current Velocity: ", currentVelocity);
+                telemetry.addData("Power Velocity: ", getPowerVelocity(currentVelocity));
+                telemetry.addData("Max PID power: ", maxPIDPower);
+                telemetry.addData("Tolerance: ", getTolerance());
                 break;
             case Standard:
                 break;
