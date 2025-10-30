@@ -813,6 +813,9 @@ public class HighMotor {
         pidfVelocity.setPIDF(kP, kI, kD, kF);
         this.maxPIDPower = Math.abs(maxPIDPower);
     }
+    public void setWheelDiameter(double wheelDiameter){
+        this.wheelDiameter = wheelDiameter;
+    }
 
     public double getPowerVelocity(double currentVelocity) {
         this.currentVelocity = currentVelocity;
