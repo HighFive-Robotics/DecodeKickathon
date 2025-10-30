@@ -11,12 +11,15 @@ import org.firstinspires.ftc.teamcode.Core.Hardware.HighMotor;
 public class ShooterUIUIUI extends LinearOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     HighMotor mTop , mBot;
+    double kp,kd,ki,kf;
+    double d1;
     public static double targetVelo = 5;
     @Override
     public void runOpMode() throws InterruptedException {
         mTop = new HighMotor(hardwareMap.get(DcMotorEx.class,"OMT"),HighMotor.RunMode.Velocity , false , true , false );
         mBot =  new HighMotor(hardwareMap.get(DcMotorEx.class,"OMT"),HighMotor.RunMode.Standard , true);
         mTop.setEncoderResolution(28);
+        mTop.setPIDCoefficients(kp,kd,ki,kf);
         mTop.setWheelDiameter(0.048);
         waitForStart();
         while (opModeIsActive()){
